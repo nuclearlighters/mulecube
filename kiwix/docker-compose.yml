@@ -1,0 +1,40 @@
+services:
+  kiwix:
+    image: ghcr.io/kiwix/kiwix-serve:latest
+    container_name: kiwix
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=kiwix"
+    restart: unless-stopped
+    ports:
+      - "192.168.42.1:8082:8080"
+    volumes:
+      - /srv/kiwix/data:/data:ro
+    command: /data/*.zim
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-kiwix
+    labels:
+      - "com.centurylinklabs.watchtower.scope=kiwix"
+    command:
+      - --scope=kiwix
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

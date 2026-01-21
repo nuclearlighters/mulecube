@@ -1,0 +1,133 @@
+# MuleCube Service DNS Records
+# All services resolve to the MuleCube IP (192.168.42.1)
+# Generated for Pi-hole custom.list
+
+# Root domains
+192.168.42.1 mulecube.local
+192.168.42.1 mulecube.net
+192.168.42.1 www.mulecube.local
+192.168.42.1 www.mulecube.net
+
+# AI Services
+192.168.42.1 translate.mulecube.local
+192.168.42.1 translate.mulecube.net
+192.168.42.1 ai.mulecube.local
+192.168.42.1 ai.mulecube.net
+192.168.42.1 ollama.mulecube.local
+192.168.42.1 ollama.mulecube.net
+
+# Knowledge
+192.168.42.1 wiki.mulecube.local
+192.168.42.1 wiki.mulecube.net
+192.168.42.1 kiwix.mulecube.local
+192.168.42.1 kiwix.mulecube.net
+192.168.42.1 maps.mulecube.local
+192.168.42.1 maps.mulecube.net
+192.168.42.1 books.mulecube.local
+192.168.42.1 books.mulecube.net
+192.168.42.1 calibre.mulecube.local
+192.168.42.1 calibre.mulecube.net
+
+# Productivity
+192.168.42.1 docs.mulecube.local
+192.168.42.1 docs.mulecube.net
+192.168.42.1 cryptpad.mulecube.local
+192.168.42.1 cryptpad.mulecube.net
+192.168.42.1 draw.mulecube.local
+192.168.42.1 draw.mulecube.net
+192.168.42.1 excalidraw.mulecube.local
+192.168.42.1 excalidraw.mulecube.net
+192.168.42.1 pdf.mulecube.local
+192.168.42.1 pdf.mulecube.net
+192.168.42.1 vault.mulecube.local
+192.168.42.1 vault.mulecube.net
+192.168.42.1 passwords.mulecube.local
+192.168.42.1 passwords.mulecube.net
+
+# Files & Sync
+192.168.42.1 files.mulecube.local
+192.168.42.1 files.mulecube.net
+192.168.42.1 sync.mulecube.local
+192.168.42.1 sync.mulecube.net
+192.168.42.1 syncthing.mulecube.local
+192.168.42.1 syncthing.mulecube.net
+
+# Communication
+192.168.42.1 chat.mulecube.local
+192.168.42.1 chat.mulecube.net
+192.168.42.1 element.mulecube.local
+192.168.42.1 element.mulecube.net
+192.168.42.1 matrix.mulecube.local
+192.168.42.1 matrix.mulecube.net
+192.168.42.1 conduit.mulecube.local
+192.168.42.1 conduit.mulecube.net
+192.168.42.1 mesh.mulecube.local
+192.168.42.1 mesh.mulecube.net
+192.168.42.1 meshtastic.mulecube.local
+192.168.42.1 meshtastic.mulecube.net
+
+# Tools
+192.168.42.1 tools.mulecube.local
+192.168.42.1 tools.mulecube.net
+192.168.42.1 network.mulecube.local
+192.168.42.1 network.mulecube.net
+192.168.42.1 archive.mulecube.local
+192.168.42.1 archive.mulecube.net
+192.168.42.1 emergency.mulecube.local
+192.168.42.1 emergency.mulecube.net
+192.168.42.1 links.mulecube.local
+192.168.42.1 links.mulecube.net
+
+# Infrastructure
+192.168.42.1 status.mulecube.local
+192.168.42.1 status.mulecube.net
+192.168.42.1 monitor.mulecube.local
+192.168.42.1 monitor.mulecube.net
+192.168.42.1 beszel.mulecube.local
+192.168.42.1 beszel.mulecube.net
+192.168.42.1 dns.mulecube.local
+192.168.42.1 dns.mulecube.net
+192.168.42.1 pihole.mulecube.local
+192.168.42.1 pihole.mulecube.net
+
+# Navigation / Marine
+192.168.42.1 navigation.mulecube.local
+192.168.42.1 navigation.mulecube.net
+192.168.42.1 signalk.mulecube.local
+192.168.42.1 signalk.mulecube.net
+192.168.42.1 marine.mulecube.local
+192.168.42.1 marine.mulecube.net
+
+# Control Panel - User
+192.168.42.1 dashboard.mulecube.local
+192.168.42.1 dashboard.mulecube.net
+192.168.42.1 homarr.mulecube.local
+192.168.42.1 homarr.mulecube.net
+192.168.42.1 home.mulecube.local
+192.168.42.1 home.mulecube.net
+
+# Control Panel - Admin
+192.168.42.1 admin.mulecube.local
+192.168.42.1 admin.mulecube.net
+192.168.42.1 dockge.mulecube.local
+192.168.42.1 dockge.mulecube.net
+192.168.42.1 containers.mulecube.local
+192.168.42.1 containers.mulecube.net
+192.168.42.1 terminal.mulecube.local
+192.168.42.1 terminal.mulecube.net
+192.168.42.1 shell.mulecube.local
+192.168.42.1 shell.mulecube.net
+192.168.42.1 logs.mulecube.local
+192.168.42.1 logs.mulecube.net
+192.168.42.1 dozzle.mulecube.local
+192.168.42.1 dozzle.mulecube.net
+
+# Control Panel - APIs
+192.168.42.1 api.mulecube.local
+192.168.42.1 api.mulecube.net
+192.168.42.1 health.mulecube.local
+192.168.42.1 health.mulecube.net
+192.168.42.1 diagnostics.mulecube.local
+192.168.42.1 diagnostics.mulecube.net
+192.168.42.1 backup.mulecube.local
+192.168.42.1 backup.mulecube.net

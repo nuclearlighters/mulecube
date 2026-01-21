@@ -1,0 +1,25 @@
+services:
+  bentopdf:
+    image: bentopdf/bentopdf:latest
+    container_name: bentopdf
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=bentopdf"
+    ports:
+      - "192.168.42.1:8085:8080"
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-bentopdf
+    labels:
+      - "com.centurylinklabs.watchtower.scope=bentopdf"
+    command:
+      - --scope=bentopdf
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

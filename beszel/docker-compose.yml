@@ -1,0 +1,47 @@
+# Beszel for MuleCube - Complete Setup
+# Lightweight server & Docker container monitoring
+
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    ports:
+      - "192.168.42.1:8100:8090"
+    volumes:
+      - ./data:/beszel_data
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=beszel"
+
+  beszel-agent:
+    image: henrygd/beszel-agent
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./beszel_agent_data:/var/lib/beszel-agent
+    environment:
+      LISTEN: 45876
+      KEY: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILj8VfmdJqRR0M4kKS6W4M83hKtAb6ISfDiSYvnrto05'
+      TOKEN: 164f5-e746d52bc-12dc7-c36e750ac
+      HUB_URL: http://192.168.42.1:8100
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=beszel"
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-beszel
+    labels:
+      - "com.centurylinklabs.watchtower.scope=beszel"
+    command:
+      - --scope=beszel
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

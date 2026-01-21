@@ -1,0 +1,29 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=vaultwarden"
+    ports:
+      - "192.168.42.1:3000:80"
+    volumes:
+      - /srv/vaultwarden/data:/data
+    environment:
+      - SIGNUPS_ALLOWED=true
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-vaultwarden
+    labels:
+      - "com.centurylinklabs.watchtower.scope=vaultwarden"
+    command:
+      - --scope=vaultwarden
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

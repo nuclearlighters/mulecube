@@ -1,0 +1,36 @@
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    hostname: pihole
+    network_mode: host
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=pihole"
+    environment:
+      TZ: 'Europe/Amsterdam'
+      WEBPASSWORD: 'gobag2026'
+      FTLCONF_dns_listeningMode: 'all'
+      PIHOLE_DNS_: '1.1.1.1;8.8.8.8'
+      FTLCONF_webserver_port: '8081'
+      PIHOLE_DOMAIN: 'mule.net'
+    volumes:
+      - /srv/pihole/etc-pihole:/etc/pihole
+      - /srv/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-pihole
+    labels:
+      - "com.centurylinklabs.watchtower.scope=pihole"
+    command:
+      - --scope=pihole
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

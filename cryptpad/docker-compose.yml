@@ -1,0 +1,24 @@
+services:
+  cryptpad:
+    image: cryptpad/cryptpad:latest
+    container_name: cryptpad
+    hostname: cryptpad
+    environment:
+      - CPAD_MAIN_DOMAIN=http://docs.mule.net:8094
+      - CPAD_SANDBOX_DOMAIN=http://docs.mule.net:8094
+      - CPAD_CONF=/cryptpad/config/config.js
+    volumes:
+      - /srv/cryptpad/data/blob:/cryptpad/blob
+      - /srv/cryptpad/data/block:/cryptpad/block
+      - /srv/cryptpad/data/data:/cryptpad/data
+      - /srv/cryptpad/data/files:/cryptpad/datastore
+      - /srv/cryptpad/customize:/cryptpad/customize
+      - /srv/cryptpad/config/config.js:/cryptpad/config/config.js
+    ports:
+      - "192.168.42.1:8094:3000"
+      - "192.168.42.1:8096:3003"
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+    restart: unless-stopped

@@ -1,0 +1,35 @@
+{
+  "options": {
+    "paths": {
+      "root": "/usr/src/app/node_modules/tileserver-gl-styles",
+      "fonts": "fonts",
+      "styles": "/styles",
+      "mbtiles": "/data"
+    }
+  },
+  "styles": {
+    "greece": {"style": "greece-style.json", "tilejson": {"bounds": [19.3, 34.8, 29.7, 41.8]}},
+    "netherlands": {"style": "netherlands-style.json", "tilejson": {"bounds": [3.3, 50.7, 7.2, 53.6]}},
+    "belgium": {"style": "belgium-style.json", "tilejson": {"bounds": [2.5, 49.5, 6.4, 51.5]}},
+    "france": {"style": "france-style.json", "tilejson": {"bounds": [-5.1, 41.3, 9.6, 51.1]}},
+    "germany": {"style": "germany-style.json", "tilejson": {"bounds": [5.9, 47.3, 15.0, 55.1]}},
+    "great-britain": {"style": "great-britain-style.json", "tilejson": {"bounds": [-8.6, 49.9, 1.8, 60.9]}},
+    "italy": {"style": "italy-style.json", "tilejson": {"bounds": [6.6, 36.6, 18.5, 47.1]}},
+    "switzerland": {"style": "switzerland-style.json", "tilejson": {"bounds": [5.9, 45.8, 10.5, 47.8]}}
+  },
+  "data": {
+    "v3": {"mbtiles": "greece.mbtiles"},
+    "netherlands": {"mbtiles": "netherlands.mbtiles"},
+    "belgium": {"mbtiles": "belgium.mbtiles"},
+    "france": {"mbtiles": "france.mbtiles"},
+    "germany": {"mbtiles": "germany.mbtiles"},
+    "great-britain": {"mbtiles": "great-britain.mbtiles"},
+    "italy": {"mbtiles": "italy.mbtiles"},
+    "switzerland": {"mbtiles": "switzerland.mbtiles"},
+    "marine-europa": {"mbtiles": "OSM-OpenCPN2-Europa1.mbtiles"},
+    "marine-mediterranean-east": {"mbtiles": "OSM-OpenCPN2-MediEast.mbtiles"},
+    "marine-northsea": {"mbtiles": "OSM-OpenCPN2-NorthSea.mbtiles"},
+    "marine-adriatic": {"mbtiles": "OSM-OpenCPN2-Adria.mbtiles"},
+    "marine-baltic": {"mbtiles": "OSM-OpenCPN2-Baltic.mbtiles"}
+  }
+}

@@ -1,0 +1,9 @@
+services:
+  networking-toolbox:
+    image: lissy93/networking-toolbox:latest
+    container_name: networking-toolbox
+    ports:
+      - "192.168.42.1:8092:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

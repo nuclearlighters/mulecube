@@ -1,0 +1,237 @@
+# MuleCube Control Panel - User Services
+# Purpose: Non-technical user dashboard, system status, service launcher
+# Always running on all MuleCube tiers
+#
+# Usage:
+#   cd /srv/mulecube-controlpanel-user
+#   docker compose up -d
+
+networks:
+  mulecube:
+    external: true
+
+volumes:
+  homarr-data:
+  homarr-icons:
+  hw-monitor-data:
+
+services:
+  # ============================================================
+  # DASHBOARD - Main user interface
+  # ============================================================
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    container_name: mulecube-homarr
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "7575:7575"
+    volumes:
+      - homarr-data:/app/data/configs
+      - homarr-icons:/app/public/icons
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+      - DISABLE_ANALYTICS=true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7575"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  # ============================================================
+  # HARDWARE MONITOR - Pi 5 specific metrics API
+  # ============================================================
+  hw-monitor:
+    build:
+      context: ./hw-monitor
+      dockerfile: Dockerfile
+    image: mulecube/hw-monitor:latest
+    container_name: mulecube-hw-monitor
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "9001:8080"
+    privileged: true
+    devices:
+      - /dev/vchiq:/dev/vchiq
+      - /dev/i2c-1:/dev/i2c-1
+      - /dev/gpiochip0:/dev/gpiochip0
+      - /dev/gpiochip4:/dev/gpiochip4
+    volumes:
+      - /opt/vc:/opt/vc:ro
+      - /sys:/sys:ro
+      - /proc:/proc:ro
+      - hw-monitor-data:/app/data
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+      - BATTERY_CAPACITY_MAH=${BATTERY_CAPACITY_MAH:-3000}
+      - BATTERY_CELLS=${BATTERY_CELLS:-2}
+      - UPS_I2C_ADDRESS=${UPS_I2C_ADDRESS:-0x42}
+      - TEMP_WARNING_C=${TEMP_WARNING_C:-75}
+      - TEMP_CRITICAL_C=${TEMP_CRITICAL_C:-80}
+      - LOW_BATTERY_PERCENT=${LOW_BATTERY_PERCENT:-20}
+      - CRITICAL_BATTERY_PERCENT=${CRITICAL_BATTERY_PERCENT:-10}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+
+  # ============================================================
+  # WIFI STATUS - Network information API
+  # ============================================================
+  wifi-status:
+    build:
+      context: ./wifi-status
+      dockerfile: Dockerfile
+    image: mulecube/wifi-status:latest
+    container_name: mulecube-wifi-status
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - /var/run/hostapd:/var/run/hostapd:ro
+      - /etc/hostapd:/etc/hostapd:ro
+      - /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+      - HOSTAPD_INTERFACE=${HOSTAPD_INTERFACE:-wlan0}
+      - API_PORT=9002
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+        reservations:
+          memory: 16M
+
+  # ============================================================
+  # USB DEVICE MONITOR - Detect and report USB peripherals
+  # ============================================================
+  usb-monitor:
+    build:
+      context: ./usb-monitor
+      dockerfile: Dockerfile
+    image: mulecube/usb-monitor:latest
+    container_name: mulecube-usb-monitor
+    restart: unless-stopped
+    networks:
+      - mulecube
+    privileged: true
+    volumes:
+      - /dev:/dev:ro
+      - /sys:/sys:ro
+      - /run/udev:/run/udev:ro
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+    ports:
+      - "9003:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+        reservations:
+          memory: 16M
+
+  # ============================================================
+  # SERVICE HEALTH AGGREGATOR - Combines all status into one API
+  # ============================================================
+  status-aggregator:
+    build:
+      context: ./status-aggregator
+      dockerfile: Dockerfile
+    image: mulecube/status-aggregator:latest
+    container_name: mulecube-status
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "9004:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+      - HW_MONITOR_URL=http://mulecube-hw-monitor:8080
+      - WIFI_STATUS_URL=http://host.docker.internal:9002
+      - USB_MONITOR_URL=http://mulecube-usb-monitor:8080
+      # Service tiers for display grouping
+      - TIER1_SERVICES=kiwix,tileserver,nginx,dnsmasq,hostapd
+      - TIER2_SERVICES=openwebui,ollama,cryptpad,filebrowser
+      - TIER3_SERVICES=retroarch,navidrome
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - hw-monitor
+      - usb-monitor
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+
+  # ============================================================
+  # SELF-HEALING DAEMON - Monitors and auto-restarts services
+  # ============================================================
+  watchdog:
+    build:
+      context: ./watchdog
+      dockerfile: Dockerfile
+    image: mulecube/watchdog:latest
+    container_name: mulecube-watchdog
+    restart: unless-stopped
+    networks:
+      - mulecube
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+      - CHECK_INTERVAL_SECONDS=30
+      - MAX_RESTART_ATTEMPTS=3
+      - RESTART_COOLDOWN_SECONDS=300
+      - CRITICAL_SERVICES=kiwix,tileserver,nginx,dnsmasq
+      - THERMAL_SHED_SERVICES=ollama,retroarch,navidrome
+      - THERMAL_SHED_TEMP_C=80
+      - BATTERY_SHED_SERVICES=ollama,retroarch,navidrome,openwebui
+      - BATTERY_SHED_PERCENT=15
+      - HW_MONITOR_URL=http://mulecube-hw-monitor:8080
+    depends_on:
+      - hw-monitor
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+        reservations:
+          memory: 16M

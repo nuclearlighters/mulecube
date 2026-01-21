@@ -1,0 +1,11 @@
+[global]
+server_name = "matrix.mulecube.net"
+database_path = "/var/lib/matrix-conduit"
+database_backend = "rocksdb"
+port = 6167
+address = "0.0.0.0"
+allow_registration = true
+allow_federation = false
+trusted_servers = []
+max_request_size = 20000000
+log = "info"

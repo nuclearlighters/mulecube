@@ -1,0 +1,10 @@
+services:
+  mulecube-dashboard:
+    image: ghcr.io/nuclearlighters/mulecube/mulecube-dashboard:latest
+    container_name: mulecube-dashboard
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "192.168.42.1:8087:8080"
+    volumes:
+      - /srv/mulecube-dashboard/data/stats.json:/usr/share/nginx/html/stats.json:ro

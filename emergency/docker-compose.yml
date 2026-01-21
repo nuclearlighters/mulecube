@@ -1,0 +1,9 @@
+services:
+  emergency:
+    image: nginx:alpine
+    container_name: emergency-ref
+    ports:
+      - "192.168.42.1:8088:80"
+    volumes:
+      - /srv/emergency:/usr/share/nginx/html:ro
+    restart: unless-stopped

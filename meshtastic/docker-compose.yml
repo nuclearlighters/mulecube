@@ -1,0 +1,25 @@
+services:
+  meshtastic-web:
+    image: ghcr.io/meshtastic/web:latest
+    container_name: meshtastic-web
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=meshtastic"
+    ports:
+      - "192.168.42.1:8084:8080"
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-meshtastic
+    labels:
+      - "com.centurylinklabs.watchtower.scope=meshtastic"
+    command:
+      - --scope=meshtastic
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

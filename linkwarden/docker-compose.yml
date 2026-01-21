@@ -1,0 +1,43 @@
+services:
+  postgres-linkwarden:
+    image: postgres:16-alpine
+    container_name: postgres-linkwarden
+    environment:
+      POSTGRES_USER: linkwarden
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: linkwardendb
+    restart: unless-stopped
+    volumes:
+      - /srv/linkwarden/pgdata-local:/var/lib/postgresql/data
+    networks:
+      - linkwarden
+
+  meilisearch-linkwarden:
+    image: getmeili/meilisearch:v1.28.1
+    container_name: meilisearch-linkwarden
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+    volumes:
+      - /srv/linkwarden/meili_data:/meili_data
+    networks:
+      - linkwarden
+
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    container_name: linkwarden
+    env_file: .env
+    restart: unless-stopped
+    ports:
+      - "192.168.42.1:8093:3000"
+    volumes:
+      - /srv/linkwarden/data:/data/data
+    depends_on:
+      - postgres-linkwarden
+      - meilisearch-linkwarden
+    networks:
+      - linkwarden
+
+networks:
+  linkwarden:
+    driver: bridge

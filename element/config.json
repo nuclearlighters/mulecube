@@ -1,0 +1,15 @@
+{
+    "default_server_config": {
+        "m.homeserver": {
+            "base_url": "http://matrix.mulecube.local:8097",
+            "server_name": "matrix.mulecube.local"
+        }
+    },
+    "disable_guests": true,
+    "disable_3pid_login": true,
+    "brand": "MuleCube Chat",
+    "default_theme": "dark",
+    "room_directory": {
+        "servers": ["matrix.mulecube.local"]
+    }
+}

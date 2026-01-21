@@ -1,0 +1,296 @@
+# MuleCube Control Panel - Admin Services
+# Purpose: Technical administration, container management, terminal access
+# Started on-demand or for Pro/Ultimate tiers only
+#
+# Usage:
+#   cd /srv/mulecube-controlpanel-admin
+#   docker compose up -d
+#
+# Security: These services provide system-level access
+# Ensure proper authentication is configured before exposing
+
+networks:
+  mulecube:
+    external: true
+
+volumes:
+  dockge-data:
+  backup-data:
+  logs-data:
+
+services:
+  # ============================================================
+  # CONTAINER MANAGEMENT - Dockge
+  # ============================================================
+  dockge:
+    image: louislam/dockge:latest
+    container_name: mulecube-dockge
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "5001:5001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dockge-data:/app/data
+      - /srv:/srv  # All MuleCube stacks
+    environment:
+      - DOCKGE_STACKS_DIR=/srv
+      - TZ=${TZ:-Europe/Amsterdam}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
+  # ============================================================
+  # WEB TERMINAL - ttyd (Full admin access)
+  # ============================================================
+  ttyd:
+    image: tsl0922/ttyd:latest
+    container_name: mulecube-terminal
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "7681:7681"
+    privileged: true
+    pid: host
+    volumes:
+      - /:/host:ro
+    # Authentication required - set ADMIN_PASSWORD in .env
+    command: >
+      ttyd 
+      -p 7681 
+      -c admin:${ADMIN_PASSWORD:-changeme}
+      -t fontSize=14
+      -t theme={"background":"#1a1a2e"}
+      nsenter -t 1 -m -u -i -n -p /bin/bash
+    environment:
+      - TERM=xterm-256color
+      - TZ=${TZ:-Europe/Amsterdam}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7681"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+
+  # ============================================================
+  # WEB TERMINAL - Read-only mode for log viewing
+  # ============================================================
+  ttyd-readonly:
+    image: tsl0922/ttyd:latest
+    container_name: mulecube-terminal-ro
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "7682:7681"
+    volumes:
+      - /var/log:/var/log:ro
+      - /srv:/srv:ro
+    command: >
+      ttyd 
+      -p 7681 
+      -R
+      -c viewer:${VIEWER_PASSWORD:-viewer}
+      -t fontSize=14
+      /bin/bash -c "echo 'Read-only terminal. Use arrow keys to scroll.'; exec bash"
+    environment:
+      - TERM=xterm-256color
+      - TZ=${TZ:-Europe/Amsterdam}
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+        reservations:
+          memory: 16M
+
+  # ============================================================
+  # LOG VIEWER - Dozzle (lightweight Docker log viewer)
+  # ============================================================
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: mulecube-logs
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "9999:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - DOZZLE_LEVEL=info
+      - DOZZLE_TAILSIZE=300
+      - DOZZLE_NO_ANALYTICS=true
+      - TZ=${TZ:-Europe/Amsterdam}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+
+  # ============================================================
+  # BACKUP SERVICE - Configuration backup/restore
+  # ============================================================
+  backup-service:
+    build:
+      context: ./backup-service
+      dockerfile: Dockerfile
+    image: mulecube/backup-service:latest
+    container_name: mulecube-backup
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "9005:8080"
+    volumes:
+      - /srv:/srv:ro
+      - backup-data:/backups
+      - /mnt/usb:/mnt/usb
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-7}
+      - AUTO_BACKUP_ENABLED=${AUTO_BACKUP_ENABLED:-false}
+      - BACKUP_PATHS=/srv
+      - EXCLUDE_PATHS=/srv/kiwix/data,/srv/maps/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
+  # ============================================================
+  # FACTORY RESET SERVICE - Controlled reset functionality
+  # ============================================================
+  reset-service:
+    build:
+      context: ./reset-service
+      dockerfile: Dockerfile
+    image: mulecube/reset-service:latest
+    container_name: mulecube-reset
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "9006:8080"
+    privileged: true
+    volumes:
+      - /srv:/srv
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+      - RESET_SECRET=${RESET_SECRET:-}
+      - PRESERVE_PATHS=/srv/kiwix/data,/srv/maps/data,/srv/calibre/data
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+
+  # ============================================================
+  # SYSTEM DIAGNOSTICS - Comprehensive health check
+  # ============================================================
+  diagnostics:
+    build:
+      context: ./diagnostics
+      dockerfile: Dockerfile
+    image: mulecube/diagnostics:latest
+    container_name: mulecube-diagnostics
+    restart: unless-stopped
+    networks:
+      - mulecube
+    ports:
+      - "9007:8080"
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /proc:/proc:ro
+      - /dev:/dev:ro
+      - logs-data:/var/log/diagnostics
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+      - HW_MONITOR_URL=http://mulecube-hw-monitor:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+
+  # ============================================================
+  # NETWORK DIAGNOSTICS - WiFi and connectivity tools
+  # ============================================================
+  network-tools:
+    image: praqma/network-multitool:latest
+    container_name: mulecube-nettools
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+    command: sleep infinity
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+
+  # ============================================================
+  # GPIO MANAGER - Advanced GPIO control (for hardware debugging)
+  # ============================================================
+  gpio-manager:
+    image: devdotnetorg/libgpiod:2.1.2-ubuntu-24.04
+    container_name: mulecube-gpio
+    restart: unless-stopped
+    networks:
+      - mulecube
+    devices:
+      - /dev/gpiochip0:/dev/gpiochip0
+      - /dev/gpiochip4:/dev/gpiochip4
+    privileged: true
+    command: sleep infinity
+    environment:
+      - TZ=${TZ:-Europe/Amsterdam}
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+        reservations:
+          memory: 16M

@@ -1,0 +1,10 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    ports:
+      - "192.168.42.1:8090:3001"
+    volumes:
+      - /srv/uptime-kuma/data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped

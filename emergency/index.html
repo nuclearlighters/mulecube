@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Reference - mule.net</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: #eee; }
+    h1 { color: #ff6b6b; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+    h2 { color: #4ecdc4; margin-top: 30px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #333; }
+    th { background: #16213e; color: #4ecdc4; }
+    tr:hover { background: #16213e; }
+    .freq { font-family: monospace; font-size: 1.1em; color: #ffd93d; }
+    .emergency { background: #ff6b6b22; }
+    .section { background: #16213e; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    a { color: #4ecdc4; }
+  </style>
+</head>
+<body>
+  <h1>📻 Emergency Communications Reference</h1>
+  
+  <div class="section">
+    <h2>🆘 Emergency Numbers</h2>
+    <table>
+      <tr class="emergency"><td>Netherlands/EU</td><td class="freq">112</td><td>Universal Emergency</td></tr>
+      <tr class="emergency"><td>Greece</td><td class="freq">112 / 100 / 166 / 199</td><td>Police/Ambulance/Fire</td></tr>
+      <tr><td>Coast Guard NL</td><td class="freq">+31 900 0111</td><td>Maritime</td></tr>
+      <tr><td>Coast Guard GR</td><td class="freq">108</td><td>Maritime</td></tr>
+    </table>
+  </div>
+
+  <h2>📡 PMR446 (License-Free EU)</h2>
+  <table>
+    <tr><th>CH</th><th>Frequency</th><th>Notes</th></tr>
+    <tr><td>1</td><td class="freq">446.00625 MHz</td><td>Calling channel</td></tr>
+    <tr><td>2</td><td class="freq">446.01875 MHz</td><td></td></tr>
+    <tr><td>3</td><td class="freq">446.03125 MHz</td><td></td></tr>
+    <tr><td>4</td><td class="freq">446.04375 MHz</td><td></td></tr>
+    <tr><td>5</td><td class="freq">446.05625 MHz</td><td></td></tr>
+    <tr><td>6</td><td class="freq">446.06875 MHz</td><td></td></tr>
+    <tr><td>7</td><td class="freq">446.08125 MHz</td><td></td></tr>
+    <tr><td>8</td><td class="freq">446.09375 MHz</td><td></td></tr>
+  </table>
+
+  <h2>🚢 Marine VHF</h2>
+  <table>
+    <tr><th>CH</th><th>Frequency</th><th>Use</th></tr>
+    <tr class="emergency"><td>16</td><td class="freq">156.800 MHz</td><td>Distress & Calling</td></tr>
+    <tr><td>9</td><td class="freq">156.450 MHz</td><td>Secondary calling</td></tr>
+    <tr><td>6</td><td class="freq">156.300 MHz</td><td>Ship-to-ship safety</td></tr>
+    <tr><td>70</td><td class="freq">156.525 MHz</td><td>DSC Digital Distress</td></tr>
+  </table>
+
+  <h2>📻 Amateur Radio</h2>
+  <table>
+    <tr><th>Band</th><th>Frequency</th><th>Use</th></tr>
+    <tr><td>2m Call</td><td class="freq">145.500 MHz</td><td>FM Calling EU</td></tr>
+    <tr><td>70cm Call</td><td class="freq">433.500 MHz</td><td>FM Calling EU</td></tr>
+    <tr><td>HF 40m</td><td class="freq">7.110 MHz</td><td>Emergency</td></tr>
+    <tr><td>HF 20m</td><td class="freq">14.300 MHz</td><td>Emergency net</td></tr>
+  </table>
+
+  <h2>✈️ Aviation & Satellite</h2>
+  <table>
+    <tr class="emergency"><td>Aviation Guard</td><td class="freq">121.500 MHz</td><td>Emergency</td></tr>
+    <tr><td>EPIRB/PLB</td><td class="freq">406.025 MHz</td><td>Distress beacon</td></tr>
+    <tr><td>Iridium</td><td class="freq">1616-1626.5 MHz</td><td>Satellite</td></tr>
+    <tr><td>GPS L1</td><td class="freq">1575.42 MHz</td><td>Navigation</td></tr>
+  </table>
+
+  <h2>🔧 Meshtastic LoRa</h2>
+  <table>
+    <tr><td>EU_868</td><td class="freq">869.4-869.65 MHz</td><td>Default EU</td></tr>
+    <tr><td>LongFast</td><td class="freq">869.525 MHz</td><td>Channel 0</td></tr>
+  </table>
+
+  <div class="section">
+    <h2>📍 MeshSat Reference</h2>
+    <p><strong>Iridium IMEI:</strong> <span class="freq">300434067943980</span></p>
+    <p><strong>RockBLOCK Email:</strong> <span class="freq">300434067943980@rockblock.rock7.com</span></p>
+  </div>
+
+  <p style="margin-top:40px;color:#666;font-size:0.9em;">
+    <a href="http://mule.net:3000">← Back to Dashboard</a>
+  </p>
+</body>
+</html>

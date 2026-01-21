@@ -1,0 +1,11 @@
+services:
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "192.168.42.1:80:80"
+      - "192.168.42.1:443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /srv/certs:/etc/nginx/certs:ro
+    restart: unless-stopped

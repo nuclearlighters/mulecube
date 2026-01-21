@@ -1,0 +1,12 @@
+services:
+  conduit:
+    image: matrixconduit/matrix-conduit:latest
+    container_name: conduit
+    environment:
+      CONDUIT_CONFIG: /etc/conduit.toml
+    volumes:
+      - /srv/conduit/data:/var/lib/matrix-conduit
+      - /srv/conduit/conduit.toml:/etc/conduit.toml:ro
+    ports:
+      - "192.168.42.1:8097:6167"
+    restart: unless-stopped

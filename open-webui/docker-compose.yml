@@ -1,0 +1,55 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=openwebui"
+    network_mode: host
+    environment:
+      # Connect to Ollama on same host
+      OLLAMA_BASE_URL: "http://127.0.0.1:11434"
+      
+      # Use built-in ChromaDB
+      VECTOR_DB: chroma
+      
+      # RAG Settings - tuned for Pi 5
+      RAG_EMBEDDING_ENGINE: ollama
+      RAG_EMBEDDING_MODEL: nomic-embed-text:latest
+      RAG_OLLAMA_BASE_URL: http://127.0.0.1:11434
+      CHUNK_SIZE: 500
+      CHUNK_OVERLAP: 100
+      RAG_TOP_K: 3
+      RAG_RELEVANCE_THRESHOLD: 0.3
+      
+      # Disable heavy features
+      ENABLE_RAG_HYBRID_SEARCH: "false"
+      PDF_EXTRACT_IMAGES: "false"
+      ENABLE_IMAGE_GENERATION: "false"
+      ENABLE_OPENAI_API: "false"
+      
+      # Local auth only
+      ENABLE_LDAP: "false"
+      ENABLE_SIGNUP: "true"
+      WEBUI_AUTH: "true"
+      DEFAULT_MODELS: "phi3:mini"
+      
+    volumes:
+      - /srv/open-webui/data:/app/backend/data
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-openwebui
+    labels:
+      - "com.centurylinklabs.watchtower.scope=openwebui"
+    command:
+      - --scope=openwebui
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    network_mode: host
+    restart: unless-stopped

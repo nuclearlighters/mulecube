@@ -1,0 +1,428 @@
+# =============================================================================
+# MuleCube GitOps - /srv/.gitignore
+# =============================================================================
+#
+# This file excludes all runtime data, databases, user content, and large files
+# from version control. Only docker-compose.yml and configuration files are
+# tracked, enabling GitOps deployment while keeping data safe on the device.
+#
+# To use:
+#   cd /srv
+#   cp .gitignore.example .gitignore  # or download this file
+#   git init
+#   git add .
+#   git commit -m "Initial MuleCube configuration"
+#
+# =============================================================================
+
+# =============================================================================
+# GLOBAL PATTERNS - Common data directories
+# =============================================================================
+**/data/
+**/db/
+**/database/
+**/databases/
+**/storage/
+**/uploads/
+**/media/
+**/logs/
+**/log/
+**/cache/
+**/tmp/
+**/temp/
+**/.cache/
+**/node_modules/
+
+# =============================================================================
+# DATABASE FILES
+# =============================================================================
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+
+# RocksDB (used by Conduit)
+*.sst
+*.log
+MANIFEST-*
+OPTIONS-*
+CURRENT
+IDENTITY
+LOCK
+LOG
+LOG.old.*
+
+# LevelDB
+*.ldb
+CURRENT
+MANIFEST-*
+
+# Redis
+*.rdb
+*.aof
+
+# PostgreSQL
+*.sql.gz
+pg_data/
+
+# =============================================================================
+# SECRETS AND CREDENTIALS - NEVER COMMIT THESE
+# =============================================================================
+.env
+*.env
+!.env.example
+!*.env.example
+
+# SSL/TLS Certificates and Keys
+*.pem
+*.key
+*.p12
+*.pfx
+**/secrets/
+**/credentials/
+**/private/
+
+# Keep public certificates for reference
+!*.crt
+!*.pub
+
+# API keys and tokens
+*_token
+*_secret
+*_key
+*.secret
+
+# =============================================================================
+# LARGE CONTENT FILES - Too big for git
+# =============================================================================
+
+# Kiwix - Wikipedia ZIM files (10GB+)
+*.zim
+*.zim.meta4
+kiwix/data/
+kiwix/library/
+
+# Maps - Tile files (10GB+)
+*.mbtiles
+*.pmtiles
+**/tiles/
+tileserver/data/
+maps/data/
+
+# Ollama - AI Models (4-30GB each)
+ollama/
+**/models/
+*.gguf
+*.bin
+
+# Media files
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.mp3
+*.flac
+*.wav
+*.ogg
+
+# Large archives
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.zip
+*.7z
+*.rar
+
+# APK files (Android apps)
+*.apk
+# But keep the index
+!apkrepo/html/index.html
+!apkrepo/html/fdroid_logo.png
+
+# =============================================================================
+# SERVICE-SPECIFIC EXCLUSIONS
+# =============================================================================
+
+# --- Vaultwarden (170,000+ icon files!) ---
+vaultwarden/data/
+vaultwarden/*/icons/
+vaultwarden/*/attachments/
+vaultwarden/*/sends/
+
+# --- CryptPad ---
+cryptpad/data/
+cryptpad/blob/
+cryptpad/block/
+cryptpad/datastore/
+# Keep config
+!cryptpad/config/
+!cryptpad/config/config.js
+!cryptpad/customize/
+
+# --- Conduit (Matrix) ---
+conduit/data/
+# Keep config
+!conduit/conduit.toml
+
+# --- Syncthing ---
+syncthing/data/
+syncthing/config/
+syncthing/*.pem
+
+# --- Calibre ---
+calibre/library/
+calibre/config/*.db
+calibre/config/*.log*
+# Keep docker-compose
+!calibre/docker-compose.yml
+
+# --- OpenWebUI ---
+openwebui/data/
+openwebui/backend/
+
+# --- Pi-hole ---
+pihole/etc-pihole/*.db
+pihole/etc-pihole/gravity.db*
+pihole/etc-pihole/pihole-FTL.db
+pihole/etc-dnsmasq.d/
+pihole/var-log/
+# Keep custom DNS list
+!pihole/etc-pihole/custom.list
+
+# --- Beszel (monitoring) ---
+beszel/data/
+beszel/beszel_agent_data/
+
+# --- FileBrowser ---
+filebrowser/database/
+filebrowser/data/
+
+# --- Linkwarden ---
+linkwarden/data/
+linkwarden/pgdata/
+
+# --- Open Archiver ---
+open-archive/data/
+open-archive/emails/
+
+# --- IT-Tools ---
+# Stateless, nothing to exclude
+
+# --- Excalidraw ---
+# Stateless, nothing to exclude
+
+# --- BentoPDF ---
+# Stateless, nothing to exclude
+
+# --- Element ---
+# Keep config.json
+!element/config.json
+
+# --- Emergency Radio ---
+# Keep index.html
+!emergency/index.html
+
+# --- Uptime Kuma ---
+uptime-kuma/data/
+
+# --- Nginx Proxy ---
+# Keep configs
+!nginx-proxy/nginx.conf
+!nginx-proxy/conf.d/
+nginx-proxy/logs/
+nginx-proxy/cache/
+
+# --- MuleCube Dashboard ---
+mulecube-dashboard/data/
+mulecube-dashboard/public/
+# Keep scripts and templates
+!mulecube-dashboard/generate-stats.sh
+!mulecube-dashboard/*.sh
+
+# --- Control Panel User ---
+mulecube-controlpanel-user/data/
+mulecube-controlpanel-user/*/__pycache__/
+mulecube-controlpanel-user/*/*.pyc
+# Keep service source code
+!mulecube-controlpanel-user/hw-monitor/
+!mulecube-controlpanel-user/wifi-status/
+!mulecube-controlpanel-user/usb-monitor/
+!mulecube-controlpanel-user/status-aggregator/
+!mulecube-controlpanel-user/watchdog/
+!mulecube-controlpanel-user/docker-compose.yml
+!mulecube-controlpanel-user/.env.example
+
+# --- Control Panel Admin ---
+mulecube-controlpanel-admin/data/
+mulecube-controlpanel-admin/*/__pycache__/
+mulecube-controlpanel-admin/*/*.pyc
+# Keep service source code
+!mulecube-controlpanel-admin/backup-service/
+!mulecube-controlpanel-admin/reset-service/
+!mulecube-controlpanel-admin/diagnostics/
+!mulecube-controlpanel-admin/docker-compose.yml
+!mulecube-controlpanel-admin/.env.example
+
+# --- Meshtastic Web ---
+meshtastic/data/
+
+# --- SignalK (Marine) ---
+signalk/data/
+signalk/.signalk/
+
+# --- Freeboard-SK ---
+freeboard-sk/data/
+
+# --- Network Tools ---
+# Stateless
+
+# =============================================================================
+# CERTIFICATES DIRECTORY
+# =============================================================================
+certs/*.key
+certs/*.pem
+certs/*.p12
+# Keep public certs and config
+!certs/*.crt
+!certs/*.cnf
+!certs/openssl.cnf
+
+# =============================================================================
+# BACKUPS (handled separately)
+# =============================================================================
+backups/
+*.backup
+*.bak
+
+# =============================================================================
+# DOCUMENTS AND USER FILES
+# =============================================================================
+Documents/
+downloads/
+Downloads/
+
+# =============================================================================
+# PYTHON
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+.eggs/
+*.egg-info/
+*.egg
+
+# =============================================================================
+# NODE.JS
+# =============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+.yarn/
+
+# =============================================================================
+# SYSTEM FILES
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+\#*\#
+.#*
+
+# =============================================================================
+# IDE AND EDITOR
+# =============================================================================
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+*.iml
+
+# =============================================================================
+# DOCKER
+# =============================================================================
+# Don't ignore docker-compose files!
+!docker-compose.yml
+!docker-compose.yaml
+!docker-compose.*.yml
+!docker-compose.*.yaml
+!Dockerfile
+!Dockerfile.*
+!.dockerignore
+
+# =============================================================================
+# GIT
+# =============================================================================
+# Keep .gitignore itself
+!.gitignore
+!.gitattributes
+
+# =============================================================================
+# EXPLICIT INCLUDES - Files that SHOULD be tracked
+# =============================================================================
+# These patterns override exclusions above
+
+# All docker-compose files
+!*/docker-compose.yml
+!*/docker-compose.yaml
+!**/docker-compose.yml
+!**/docker-compose.yaml
+
+# All Dockerfiles
+!*/Dockerfile
+!**/Dockerfile
+
+# Configuration files
+!*/config.js
+!*/config.json
+!*/config.toml
+!*/config.yml
+!*/config.yaml
+!**/config.js
+!**/config.json
+
+# Requirements files
+!*/requirements.txt
+!**/requirements.txt
+
+# Example env files
+!*/.env.example
+!**/.env.example
+
+# Shell scripts
+!*.sh
+!*/*.sh
+!**/*.sh
+
+# Nginx configs
+!*/nginx.conf
+!**/nginx.conf
+!*/conf.d/*.conf
+
+# HTML files for static sites
+!*/index.html
+!**/index.html
+
+# README files
+!README.md
+!*/README.md
+!**/README.md

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Repository | MuleCube</title>
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --fdroid: #1976d2;
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-highlight: #273549;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #22c55e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        h1 { font-size: 1.75rem; font-weight: 600; margin-bottom: 0.5rem; }
+        h1 span { color: var(--primary); }
+        .subtitle { color: var(--text-muted); font-size: 1rem; }
+
+        .fdroid-banner {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-highlight) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .fdroid-banner img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .fdroid-info h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .fdroid-info h2 .verified { color: var(--success); font-size: 1rem; }
+        .fdroid-info p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .fdroid-info a { color: var(--fdroid); text-decoration: none; font-size: 0.85rem; }
+        .fdroid-info a:hover { text-decoration: underline; }
+
+        .info-banner {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .info-banner strong { color: var(--text); }
+        .info-banner code {
+            background: var(--bg);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .app-grid { display: grid; gap: 1rem; }
+
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: 56px 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .app-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .app-card.recommended {
+            border-color: var(--success);
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(34, 197, 94, 0.05) 100%);
+        }
+
+        .app-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .app-info h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .app-info h3 .badge {
+            font-size: 0.65rem;
+            background: var(--success);
+            color: white;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            font-weight: 500;
+        }
+        .app-info p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+
+        .app-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .app-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .download-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.35rem;
+        }
+
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn:hover { background: var(--primary-dark); }
+
+        .sig-link {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .sig-link:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .category {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .offline-notice {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .offline-notice .icon { color: var(--success); }
+
+        .tip-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .tip-box strong { color: #60a5fa; }
+        .tip-box code {
+            background: var(--bg);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+        }
+
+        .tip-box.integration {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .tip-box.integration strong { color: var(--success); }
+
+        /* Map region selector */
+        .map-integration {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .map-integration-header {
+            font-size: 0.85rem;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .map-integration-steps {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .map-integration-steps ol {
+            margin-left: 1.25rem;
+            margin-top: 0.25rem;
+        }
+
+        .map-integration-steps li {
+            margin-bottom: 0.25rem;
+        }
+
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .country-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem 0.25rem;
+            color: var(--text);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .country-btn:hover {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .country-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .country-btn .flag {
+            font-size: 1.25rem;
+        }
+
+        .country-btn .name {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .country-btn.copied .name {
+            color: white;
+        }
+
+        .copy-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .url-display {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg);
+            border-radius: 6px;
+            border: 1px solid var(--success);
+        }
+
+        .url-label {
+            font-size: 0.75rem;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .url-field {
+            width: 100%;
+            padding: 0.6rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: monospace;
+            font-size: 0.75rem;
+            cursor: text;
+        }
+
+        .url-field:focus {
+            outline: none;
+            border-color: var(--success);
+        }
+
+        .url-instructions {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+            text-align: center;
+        }
+
+        .setup-steps {
+            margin-bottom: 1rem;
+        }
+
+        .setup-step {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .step-content strong {
+            color: var(--text);
+        }
+
+        .settings-table {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .settings-table td {
+            padding: 0.25rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-table td:first-child {
+            color: var(--text);
+            font-weight: 500;
+            width: 40%;
+        }
+
+        .settings-table td:last-child {
+            font-family: monospace;
+            color: var(--text-muted);
+        }
+
+        .settings-table em {
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .country-section-header {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a { color: var(--primary); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        .footer-note { margin-top: 0.75rem; font-size: 0.8rem; opacity: 0.8; }
+        .last-updated { margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.6; }
+
+        @media (max-width: 600px) {
+            .fdroid-banner { flex-direction: column; text-align: center; }
+            .app-card { grid-template-columns: 48px 1fr; }
+            .app-icon { width: 48px; height: 48px; }
+            .download-section { grid-column: 1 / -1; align-items: center; }
+            .app-meta { flex-wrap: wrap; gap: 0.5rem; }
+            .country-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">📦</div>
+            <h1>Mule<span>Cube</span> App Repository</h1>
+            <p class="subtitle">Essential Android apps for offline use</p>
+        </header>
+
+        <div class="fdroid-banner">
+            <img src="fdroid_logo.png" alt="F-Droid Logo">
+            <div class="fdroid-info">
+                <h2>
+                    All Apps Sourced from F-Droid
+                    <span class="verified">✓</span>
+                </h2>
+                <p>
+                    Every APK in this repository is downloaded directly from 
+                    <strong>F-Droid</strong>, the trusted open-source Android app catalogue. 
+                    All apps are free, open-source, and contain no tracking or ads.
+                </p>
+                <a href="https://f-droid.org" target="_blank" rel="noopener">Learn more about F-Droid →</a>
+            </div>
+        </div>
+
+        <div class="offline-notice">
+            <span class="icon">📡</span>
+            <span>These apps are pre-downloaded for <strong>offline installation</strong> when you don't have internet access.</span>
+        </div>
+
+        <div class="info-banner">
+            <strong>How to install:</strong> Tap the download button, then open the APK file. 
+            You may need to enable <code>Install from unknown sources</code> in your Android settings.
+        </div>
+
+        <div class="category">🗺️ Navigation & Maps</div>
+        <div class="app-grid">
+            <div class="app-card recommended">
+                <div class="app-icon">🗺️</div>
+                <div class="app-info">
+                    <h3>OsmAnd+ <span class="badge">★ Works with MuleCube</span></h3>
+                    <p>Full-featured offline maps with navigation. Can display maps directly from MuleCube's map server.</p>
+                    <div class="app-meta">
+                        <span>📦 150 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                    <div class="map-integration">
+                        <div class="map-integration-header">🗺️ Setup: Use MuleCube Maps in OsmAnd</div>
+                        <div class="setup-steps">
+                            <div class="setup-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <strong>Enable Online Maps Plugin</strong><br>
+                                    Menu → Plugins → Online maps → Enable
+                                </div>
+                            </div>
+                            <div class="setup-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <strong>Add Map Source</strong><br>
+                                    Menu → Configure map → Map source → Add
+                                </div>
+                            </div>
+                            <div class="setup-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <strong>Configure Settings</strong><br>
+                                    <table class="settings-table">
+                                        <tr><td>Name</td><td>MuleCube [Country]</td></tr>
+                                        <tr><td>URL</td><td><em>Tap a country below</em></td></tr>
+                                        <tr><td>Min zoom</td><td>0</td></tr>
+                                        <tr><td>Max zoom</td><td>14</td></tr>
+                                        <tr><td>Expire time</td><td><em>leave empty</em></td></tr>
+                                        <tr><td>Elliptic mercator</td><td>OFF</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="setup-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <strong>Select the Map</strong><br>
+                                    Save, then go to Map source and select your new MuleCube map
+                                </div>
+                            </div>
+                        </div>
+                        <div class="country-section-header">Available Map Regions</div>
+                        <div class="country-grid">
+                            <button class="country-btn" onclick="showMapUrl('netherlands', 'Netherlands', this)">
+                                <span class="flag">🇳🇱</span>
+                                <span class="name">Netherlands</span>
+                            </button>
+                            <button class="country-btn" onclick="showMapUrl('belgium', 'Belgium', this)">
+                                <span class="flag">🇧🇪</span>
+                                <span class="name">Belgium</span>
+                            </button>
+                            <button class="country-btn" onclick="showMapUrl('france', 'France', this)">
+                                <span class="flag">🇫🇷</span>
+                                <span class="name">France</span>
+                            </button>
+                            <button class="country-btn" onclick="showMapUrl('germany', 'Germany', this)">
+                                <span class="flag">🇩🇪</span>
+                                <span class="name">Germany</span>
+                            </button>
+                            <button class="country-btn" onclick="showMapUrl('great-britain', 'Great Britain', this)">
+                                <span class="flag">🇬🇧</span>
+                                <span class="name">Great Britain</span>
+                            </button>
+                            <button class="country-btn" onclick="showMapUrl('italy', 'Italy', this)">
+                                <span class="flag">🇮🇹</span>
+                                <span class="name">Italy</span>
+                            </button>
+                            <button class="country-btn" onclick="showMapUrl('switzerland', 'Switzerland', this)">
+                                <span class="flag">🇨🇭</span>
+                                <span class="name">Switzerland</span>
+                            </button>
+                            <button class="country-btn" onclick="showMapUrl('greece', 'Greece', this)">
+                                <span class="flag">🇬🇷</span>
+                                <span class="name">Greece</span>
+                            </button>
+                        </div>
+                        <div class="url-display" id="urlDisplay" style="display: none;">
+                            <div class="url-label">URL for <span id="countryLabel"></span>:</div>
+                            <input type="text" id="urlField" class="url-field" readonly onclick="this.select()">
+                            <div class="url-instructions">Tap the URL box to select, then copy</div>
+                        </div>
+                        <div class="copy-hint">Tap a country to get its URL</div>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/net.osmand.plus_521303.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/net.osmand.plus_521303.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="category">📡 Communication</div>
+        <div class="app-grid">
+            <div class="app-card">
+                <div class="app-icon">📡</div>
+                <div class="app-info">
+                    <h3>Meshtastic</h3>
+                    <p>Off-grid mesh networking. Send messages without internet or cell service via LoRa radios.</p>
+                    <div class="app-meta">
+                        <span>📦 15 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/com.geeksville.mesh_29319661.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/com.geeksville.mesh_29319661.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-icon">💬</div>
+                <div class="app-info">
+                    <h3>Element X</h3>
+                    <p>Next-gen Matrix chat client. Secure, decentralized messaging.</p>
+                    <div class="app-meta">
+                        <span>📦 153 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                    <div class="tip-box integration">
+                        <strong>💬 MuleCube Chat:</strong> Connect to <code>http://matrix.mulecube.local</code>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/io.element.android.x_202512004.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/io.element.android.x_202512004.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-icon">🌿</div>
+                <div class="app-info">
+                    <h3>Briar</h3>
+                    <p>Secure P2P messaging. Works over Tor, WiFi, or Bluetooth — no servers required.</p>
+                    <div class="app-meta">
+                        <span>📦 47 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/org.briarproject.briar.android_10515.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/org.briarproject.briar.android_10515.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="category">🎵 Media & Entertainment</div>
+        <div class="app-grid">
+            <div class="app-card">
+                <div class="app-icon">🎵</div>
+                <div class="app-info">
+                    <h3>Subtracks</h3>
+                    <p>Subsonic/Navidrome music client. Stream your local music library.</p>
+                    <div class="app-meta">
+                        <span>📦 27 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/com.subtracks_9.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/com.subtracks_9.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-icon">📺</div>
+                <div class="app-info">
+                    <h3>VLC</h3>
+                    <p>Universal media player. Plays virtually any video or audio format.</p>
+                    <div class="app-meta">
+                        <span>📦 47 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/org.videolan.vlc_13060508.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/org.videolan.vlc_13060508.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-icon">📚</div>
+                <div class="app-info">
+                    <h3>KOReader</h3>
+                    <p>E-book reader for PDF, EPUB, MOBI and more. Works great with Calibre libraries.</p>
+                    <div class="app-meta">
+                        <span>📦 29 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                    <div class="tip-box integration">
+                        <strong>📚 MuleCube Books:</strong> Download ebooks from <code>http://books.mulecube.local</code>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/org.koreader.launcher.fdroid_114503.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/org.koreader.launcher.fdroid_114503.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="category">🛠️ Utilities</div>
+        <div class="app-grid">
+            <div class="app-card">
+                <div class="app-icon">🔐</div>
+                <div class="app-info">
+                    <h3>Bitwarden</h3>
+                    <p>Password manager. Securely store and autofill your passwords.</p>
+                    <div class="app-meta">
+                        <span>📦 87 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                    <div class="tip-box integration">
+                        <strong>🔐 MuleCube Vault:</strong> Set server URL to <code>https://vault.mulecube.local</code>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/com.x8bit.bitwarden-fdroid.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/com.x8bit.bitwarden-fdroid.apk-sha256.txt" class="sig-link">🔏 SHA256 Checksum (.txt)</a>
+                </div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-icon">🤖</div>
+                <div class="app-info">
+                    <h3>GPT Mobile</h3>
+                    <p>AI chat client. Connect to local LLM servers.</p>
+                    <div class="app-meta">
+                        <span>📦 5 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                    <div class="tip-box integration">
+                        <strong>🤖 MuleCube AI:</strong> Set API endpoint to <code>http://ai.mulecube.local</code>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/dev.chungjungsoo.gptmobile_17.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/dev.chungjungsoo.gptmobile_17.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="category">📁 Productivity</div>
+        <div class="app-grid">
+            <div class="app-card">
+                <div class="app-icon">🔄</div>
+                <div class="app-info">
+                    <h3>Syncthing Fork</h3>
+                    <p>Continuous file synchronization. Sync files between devices without the cloud.</p>
+                    <div class="app-meta">
+                        <span>📦 63 MB</span>
+                        <span>🏷️ Free & Open Source</span>
+                    </div>
+                    <div class="tip-box integration">
+                        <strong>🔄 MuleCube Sync:</strong> Add MuleCube as a device via <code>http://sync.mulecube.local</code>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="apps/com.github.catfriend1.syncthingfork_2001301.apk" class="download-btn">⬇ Download</a>
+                    <a href="apps/com.github.catfriend1.syncthingfork_2001301.apk.asc" class="sig-link">🔏 PGP Signature (.asc)</a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Part of <a href="http://mulecube.local">MuleCube</a> — The internet, in your backpack</p>
+            <p class="footer-note">
+                All applications are free and open-source software (FOSS).<br>
+                APKs sourced from <a href="https://f-droid.org" target="_blank" rel="noopener">F-Droid</a> official repository.
+            </p>
+            <p class="last-updated">Last updated: Tue, 20 Jan 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        function showMapUrl(region, countryName, button) {
+            // OsmAnd uses {0}/{1}/{2} format for zoom/x/y
+            const url = 'http://maps.mulecube.local/styles/' + region + '/512/{0}/{1}/{2}.png';
+            
+            // Highlight selected button
+            const allButtons = document.querySelectorAll('.country-btn');
+            allButtons.forEach(btn => btn.classList.remove('copied'));
+            button.classList.add('copied');
+            
+            // Show URL display
+            const display = document.getElementById('urlDisplay');
+            const label = document.getElementById('countryLabel');
+            const field = document.getElementById('urlField');
+            
+            label.textContent = countryName;
+            field.value = url;
+            display.style.display = 'block';
+            
+            // Auto-select the URL text
+            field.focus();
+            field.select();
+        }
+    </script>
+</body>
+</html>

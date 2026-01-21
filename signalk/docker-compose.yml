@@ -1,0 +1,36 @@
+services:
+  signalk-server:
+    image: cr.signalk.io/signalk/signalk-server:latest
+    container_name: signalk-server
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=signalk"
+    ports:
+      - "192.168.42.1:8102:3000"
+    volumes:
+      - /srv/signalk/data:/home/node/.signalk
+      - ./charts:/home/node/.signalk/charts-simple
+    environment:
+      - TZ=Europe/Amsterdam
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/signalk"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-signalk
+    labels:
+      - "com.centurylinklabs.watchtower.scope=signalk"
+    command:
+      - --scope=signalk
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
